@@ -83,14 +83,18 @@ def draw_game(game):
     for y in range(HEIGHT):
         line = list(game["field"][y])
         if y == HEIGHT - 1:
-            line[game["player_x"]] = "O" if game["alive"] else "X"
+             # ← 【変更】加速中（boost_timer > 0）なら「V」、通常は「O」にする
+            player_char = "V" if game["boost_timer"] > 0 else "O"
+            line[game["player_x"]] = player_char if game["alive"] else "X"
         print("|" + "".join(line) + "|")
     print("+" + "-" * WIDTH + "+")
     print(f"距離 {game['distance']:<5} 得点 {game['score']:<6} 速度 {1/game['speed']:.1f}行/秒    ")
     status = ("ゲームオーバー [R]でリスタート" if not game["alive"]
               else "滑走中" if game["running"] else "[Space]でスタート")
     print(status.ljust(WIDTH + 22))
-    print("← →: 方向変更  Space: 開始/停止  R: 再開  Q: 終了".ljust(WIDTH + 22))
+
+    #追加:加速機能の操作説明を表示
+    print("W/↑: 加速  ← →: 方向変更  Space: 開始/停止  R: 再開  Q: 終了".ljust(WIDTH + 22))
     sys.stdout.flush()
 
 
@@ -132,6 +136,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-#ジャンプ、ｗｓ、リザルト（ハイスコア、ライフ）
