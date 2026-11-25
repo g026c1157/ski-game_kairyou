@@ -47,6 +47,14 @@ def make_row(distance):
         pos = random.randrange(WIDTH)
         if row[pos] == " ":
             row[pos] = "A"
+
+    #追加:横幅3〜5マスのクレバス（=）を作る
+    if random.random() < chance / 4:
+        w = random.randint(10, 15)
+        start = random.randrange(WIDTH - w + 1)
+        for i in range(start, start + w):
+            row[i] = "="
+
     return "".join(row)
 
 
@@ -79,8 +87,9 @@ def update_game(game):
     game["speed"] = base_speed * 0.5 if game["boost_timer"] > 0 else base_speed
 
     #変更:木(A)はジャンプ不可、崖(*)はジャンプ中(jump_timer > 0)なら飛び越えられる
+    #追加:クレバス（=）もジャンプ中なら飛び越えられるようにする
     cell = game["field"][HEIGHT - 1][game["player_x"]]
-    if cell == "A" or (cell == "*" and game["jump_timer"] == 0):
+    if cell == "A" or (cell in ("*", "=") and game["jump_timer"] == 0):
         game["alive"] = False
 
 
