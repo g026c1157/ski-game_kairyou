@@ -100,8 +100,13 @@ def draw_game(game):
     for y in range(HEIGHT):
         line = list(game["field"][y])
         if y == HEIGHT - 1:
-             #変更：加速中（boost_timer > 0）なら「V」、通常は「O」にする
-            player_char = "V" if game["boost_timer"] > 0 else "O"
+            #変更:ジャンプ中は「^」、加速中は「V」、通常は「O」にする
+            if game["jump_timer"] > 0:
+                player_char = "^"
+            elif game["boost_timer"] > 0:
+                player_char = "V"
+            else:
+                player_char = "O"
             line[game["player_x"]] = player_char if game["alive"] else "X"
         print("|" + "".join(line) + "|")
     print("+" + "-" * WIDTH + "+")
@@ -111,7 +116,8 @@ def draw_game(game):
     print(status.ljust(WIDTH + 22))
 
     #追加:加速機能の操作説明を表示
-    print("W/↑: 加速  ← →: 方向変更  Space: 開始/停止  R: 再開  Q: 終了".ljust(WIDTH + 22))
+    #追加:ジャンプ機能の操作説明を表示
+    print("W/↑: 加速  J/Enter: ジャンプ  ← →: 方向変更  Space: 開始/停止  R: 再開  Q: 終了".ljust(WIDTH + 22))
     sys.stdout.flush()
 
 
