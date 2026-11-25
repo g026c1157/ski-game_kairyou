@@ -102,7 +102,7 @@ def update_game(game):
     #追加:無敵時は木(A)に当たっても生存する、崖(*)やクレバス(=)はアウト
     cell = game["field"][HEIGHT - 1][game["player_x"]]
     if cell == "$":
-        game["star_timer"] = 20
+        game["star_timer"] = 25
     elif cell in ("*", "=") and game["jump_timer"] == 0:
         game["alive"] = False
     elif cell == "A" and game["star_timer"] == 0:
@@ -120,6 +120,13 @@ def draw_game(game):
             #変更:ジャンプ中は「^」、加速中は「V」、通常は「O」にする
             if game["jump_timer"] > 0:
                 player_char = "^"
+            #追加:無敵スター取得中は「@」、残り8ターン以下で点滅
+            elif game["star_timer"] > 0:
+                if game["star_timer"] <= 8 and game["star_timer"] % 2 == 0:
+                    player_char = "O"
+                else:
+                    player_char = "@"
+
             elif game["boost_timer"] > 0:
                 player_char = "V"
             else:
