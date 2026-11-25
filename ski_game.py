@@ -18,14 +18,21 @@ def get_key():
     key = msvcrt.getwch()
     if key in ("\x00", "\xe0"):
         special = msvcrt.getwch()
-        return "left" if special == "K" else "right" if special == "M" else None
+        if special == "K":
+            return "left"
+        if special == "M":
+            return "right"
+        if special == "H":  #追加:上矢印キー
+            return "up"
+        return None
     return key.lower()
 
 
 def start_game():
     return {"player_x": WIDTH // 2, "direction": 1, "distance": 0,
             "speed": START_INTERVAL, "alive": True, "running": False,
-            "field": [" " * WIDTH for _ in range(HEIGHT)], "score": 0}
+            "field": [" " * WIDTH for _ in range(HEIGHT)], "score": 0,
+            "boost_timer": 0}#追加:加速の残りターン数
 
 
 def make_row(distance):
@@ -49,12 +56,22 @@ def update_game(game):
     if nx < 0 or nx >= WIDTH:
         game["alive"] = False
         return
+    
+    #追加:加速タイマーのカウントダウン
+    if game["boost_timer"] > 0:
+        game["boost_timer"] -= 1
+
     game["player_x"] = nx
     game["field"].pop()
     game["field"].insert(0, make_row(game["distance"]))
     game["distance"] += 1
     game["score"] = game["distance"] * 10
-    game["speed"] = max(MIN_INTERVAL, START_INTERVAL - game["distance"] * 0.001)
+
+    #追加:基本速度を計算し、加速中だけ待ち時間を半分にする
+    base_speed = max(MIN_INTERVAL, START_INTERVAL - game["distance"] * 0.001)
+    #変更
+    game["speed"] = base_speed * 0.5 if game["boost_timer"] > 0 else base_speed
+
     if game["field"][HEIGHT - 1][game["player_x"]] != " ":
         game["alive"] = False
 
@@ -99,6 +116,11 @@ def main():
                 game["direction"] = -1
             elif key in ("right", "d"):
                 game["direction"] = 1
+   
+            #追加:Wまたは↑が押されたら加速開始
+            elif key in ("up", "w") and game["running"] and game["alive"]:
+                game["boost_timer"] = 3
+     
             if game["running"]:
                 update_game(game)
             draw_game(game)
@@ -110,3 +132,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+#ジャンプ、ｗｓ、リザルト（ハイスコア、ライフ）
