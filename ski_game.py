@@ -143,6 +143,9 @@ def draw_game(game):
     #追加:加速機能の操作説明を表示
     #追加:ジャンプ機能の操作説明を表示
     print("W/↑: 加速  J/Enter: ジャンプ  ← →: 方向変更  Space: 開始/停止  R: 再開  Q: 終了".ljust(WIDTH + 22))
+    #追加：追加機能の説明
+    print("$:スター取得で無敵(@)＆加速（木(A)を突破可能 / 崖(*)とクレバス(=)は落下）".ljust(WIDTH + 22))
+    print("回避方法: 木(A)=左右か無敵で突破 / 崖(*)・クレバス(=)=左右かJ/Enterでジャンプ".ljust(WIDTH + 22))
     sys.stdout.flush()
 
 
