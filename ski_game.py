@@ -33,7 +33,8 @@ def start_game():
             "speed": START_INTERVAL, "alive": True, "running": False,
             "field": [" " * WIDTH for _ in range(HEIGHT)], "score": 0,
             "boost_timer": 0, #追加:加速の残りターン数
-            "jump_timer": 0 #追加:ジャンプの残りターン数
+            "jump_timer": 0, #追加:ジャンプの残りターン数
+            "star_timer": 0  #追加:無敵の残りターン数
             }
 
 
@@ -48,12 +49,18 @@ def make_row(distance):
         if row[pos] == " ":
             row[pos] = "A"
 
-    #追加:横幅3〜5マスのクレバス（=）を作る
+    #追加:横幅10〜15マスのクレバス（=）を作る
     if random.random() < chance / 4:
         w = random.randint(10, 15)
         start = random.randrange(WIDTH - w + 1)
         for i in range(start, start + w):
             row[i] = "="
+
+    #追加:無敵スター（$）を1つ置く
+    if random.random() < 0.02:
+        pos = random.randrange(WIDTH)
+        if row[pos] == " ":
+            row[pos] = "$"
 
     return "".join(row)
 
@@ -100,6 +107,7 @@ def draw_game(game):
     for y in range(HEIGHT):
         line = list(game["field"][y])
         if y == HEIGHT - 1:
+
             #変更:ジャンプ中は「^」、加速中は「V」、通常は「O」にする
             if game["jump_timer"] > 0:
                 player_char = "^"
@@ -109,6 +117,7 @@ def draw_game(game):
                 player_char = "O"
             line[game["player_x"]] = player_char if game["alive"] else "X"
         print("|" + "".join(line) + "|")
+    
     print("+" + "-" * WIDTH + "+")
     print(f"距離 {game['distance']:<5} 得点 {game['score']:<6} 速度 {1/game['speed']:.1f}行/秒    ")
     status = ("ゲームオーバー [R]でリスタート" if not game["alive"]
