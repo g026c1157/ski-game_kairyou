@@ -57,7 +57,7 @@ def make_row(distance):
             row[i] = "="
 
     #追加:無敵スター（$）を1つ置く
-    if random.random() < 0.02:
+    if random.random() < 0.03:
         pos = random.randrange(WIDTH)
         if row[pos] == " ":
             row[pos] = "$"
@@ -82,21 +82,30 @@ def update_game(game):
     if game["jump_timer"] > 0:
         game["jump_timer"] -= 1
 
+    #追加:無敵タイマーのカウントダウン
+    if game["star_timer"] > 0:
+        game["star_timer"] -= 1
+
     game["player_x"] = nx
     game["field"].pop()
     game["field"].insert(0, make_row(game["distance"]))
     game["distance"] += 1
     game["score"] = game["distance"] * 10
 
-    #追加:基本速度を計算し、加速中だけ待ち時間を半分にする
+    #変更:基本速度を計算し、加速中、スター無敵中に待ち時間を半分にする
     base_speed = max(MIN_INTERVAL, START_INTERVAL - game["distance"] * 0.001)
-    #変更
-    game["speed"] = base_speed * 0.5 if game["boost_timer"] > 0 else base_speed
+    is_fast = (game["boost_timer"] > 0 or game["star_timer"] > 0)
+    game["speed"] = base_speed * 0.5 if is_fast else base_speed
 
     #変更:木(A)はジャンプ不可、崖(*)はジャンプ中(jump_timer > 0)なら飛び越えられる
     #追加:クレバス（=）もジャンプ中なら飛び越えられるようにする
+    #追加:無敵時は木(A)に当たっても生存する、崖(*)やクレバス(=)はアウト
     cell = game["field"][HEIGHT - 1][game["player_x"]]
-    if cell == "A" or (cell in ("*", "=") and game["jump_timer"] == 0):
+    if cell == "$":
+        game["star_timer"] = 20
+    elif cell in ("*", "=") and game["jump_timer"] == 0:
+        game["alive"] = False
+    elif cell == "A" and game["star_timer"] == 0:
         game["alive"] = False
 
 
