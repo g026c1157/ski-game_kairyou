@@ -32,7 +32,9 @@ def start_game():
     return {"player_x": WIDTH // 2, "direction": 1, "distance": 0,
             "speed": START_INTERVAL, "alive": True, "running": False,
             "field": [" " * WIDTH for _ in range(HEIGHT)], "score": 0,
-            "boost_timer": 0}#追加:加速の残りターン数
+            "boost_timer": 0, #追加:加速の残りターン数
+            "jump_timer": 0 #追加:ジャンプの残りターン数
+            }
 
 
 def make_row(distance):
@@ -61,6 +63,10 @@ def update_game(game):
     if game["boost_timer"] > 0:
         game["boost_timer"] -= 1
 
+    #追加:ジャンプタイマーのカウントダウン
+    if game["jump_timer"] > 0:
+        game["jump_timer"] -= 1
+
     game["player_x"] = nx
     game["field"].pop()
     game["field"].insert(0, make_row(game["distance"]))
@@ -72,7 +78,9 @@ def update_game(game):
     #変更
     game["speed"] = base_speed * 0.5 if game["boost_timer"] > 0 else base_speed
 
-    if game["field"][HEIGHT - 1][game["player_x"]] != " ":
+    #変更:木(A)はジャンプ不可、崖(*)はジャンプ中(jump_timer > 0)なら飛び越えられる
+    cell = game["field"][HEIGHT - 1][game["player_x"]]
+    if cell == "A" or (cell == "*" and game["jump_timer"] == 0):
         game["alive"] = False
 
 
@@ -83,7 +91,7 @@ def draw_game(game):
     for y in range(HEIGHT):
         line = list(game["field"][y])
         if y == HEIGHT - 1:
-             # ← 【変更】加速中（boost_timer > 0）なら「V」、通常は「O」にする
+             #変更：加速中（boost_timer > 0）なら「V」、通常は「O」にする
             player_char = "V" if game["boost_timer"] > 0 else "O"
             line[game["player_x"]] = player_char if game["alive"] else "X"
         print("|" + "".join(line) + "|")
@@ -124,6 +132,11 @@ def main():
             #追加:Wまたは↑が押されたら加速開始
             elif key in ("up", "w") and game["running"] and game["alive"]:
                 game["boost_timer"] = 3
+
+            #追加:JまたはEnterが押されたらジャンプ開始
+            elif key in ("j", "\r") and game["running"] and game["alive"]:
+                if game["jump_timer"] == 0:
+                    game["jump_timer"] = 3
      
             if game["running"]:
                 update_game(game)
