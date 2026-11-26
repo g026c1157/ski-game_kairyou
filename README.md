@@ -18,7 +18,7 @@ cd ski-game_kairyou
 ```
 
 ## 起動方法
-VS Code のターミナル、または Windows Terminal でプロジェクトフォルダーを開き、以下のコマンドを実行します（※ファイル名は環境に合わせて変更してください）。
+VS Code のターミナル、または Windows Terminal でプロジェクトフォルダーを開き、以下のコマンドを実行します。
 
 ```bash
 python ski_game.py
