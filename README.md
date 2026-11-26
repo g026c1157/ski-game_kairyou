@@ -13,8 +13,8 @@
 外部ライブラリのインストールは不要です。Python がインストールされた Windows 環境であればそのまま動作します。
 
 ```bash
-git clone <このリポジトリのURL>
-cd <リポジトリのフォルダー名>
+git clone [https://github.com/g026c1157/ski-game_kairyou.git](https://github.com/g026c1157/ski-game_kairyou.git)
+cd ski-game_kairyou
 ```
 
 ## 起動方法
